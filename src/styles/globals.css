@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* カラーパレット */
+  --color-primary: #6C63FF;
+  --color-secondary: #FF6584;
+  --color-accent: #43E6FC;
+  --color-success: #43FCAA;
+  --color-background: #0F0F1A;
+  --color-surface: #1A1A2E;
+  --color-text: #E8E8F0;
+  --color-text-muted: #9999B3;
+
+  /* フォント */
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+
+  code, pre {
+    font-family: var(--font-mono);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card-glow {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .card-glow:hover {
+    box-shadow: 0 0 30px color-mix(in srgb, var(--color-primary) 30%, transparent);
+    transform: translateY(-4px);
+  }
+
+  .bg-surface {
+    background-color: var(--color-surface);
+  }
+
+  .border-surface {
+    border-color: color-mix(in srgb, var(--color-text) 10%, transparent);
+  }
+}
