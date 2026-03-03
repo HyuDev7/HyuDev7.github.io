@@ -1,0 +1,1 @@
+{"pageProps":{"project":{"id":"kabuki","title":"Kabuki","description":"Multi-agent orchestration system using Claude Code. Coordinates multiple AI agents across terminal sessions with Zellij for parallel task execution.","tags":["Kotlin","Claude","Zellij","AI"],"thumbnail":"/images/projects/kabuki.png","github":"https://github.com/","demo":null,"featured":true}},"__N_SSG":true}
