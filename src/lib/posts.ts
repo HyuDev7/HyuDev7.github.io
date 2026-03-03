@@ -18,6 +18,7 @@ export interface Post extends PostMeta {
 const postsDir = path.join(process.cwd(), 'content/blog')
 
 export function getAllPostMetas(): PostMeta[] {
+  if (!fs.existsSync(postsDir)) return []
   const files = fs.readdirSync(postsDir).filter((f) => f.endsWith('.md'))
   return files
     .map((file) => {
@@ -51,6 +52,7 @@ export function getPostBySlug(slug: string): Post {
 }
 
 export function getAllSlugs(): string[] {
+  if (!fs.existsSync(postsDir)) return []
   return fs
     .readdirSync(postsDir)
     .filter((f) => f.endsWith('.md'))
