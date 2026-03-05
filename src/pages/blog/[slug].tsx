@@ -17,7 +17,13 @@ interface BlogPostProps {
 
 export default function BlogPost({ meta, mdxSource, toc }: BlogPostProps) {
   return (
-    <Layout title={meta.title} description={meta.summary}>
+    <Layout
+      title={meta.title}
+      description={meta.summary}
+      ogType="article"
+      path={`/blog/${meta.slug}`}
+      ogImage={meta.thumbnail || undefined}
+    >
       <div
         style={{
           maxWidth: '1100px',
