@@ -1,5 +1,6 @@
 import Layout from '@/components/layout/Layout'
 import Tag from '@/components/ui/Tag'
+import FadeIn from '@/components/ui/FadeIn'
 
 const skills = {
   Languages: ['Kotlin', 'TypeScript', 'Python', 'Go'],
@@ -26,6 +27,7 @@ export default function About() {
           padding: '5rem 1.5rem 3rem',
         }}
       >
+        <FadeIn>
         <h1
           style={{
             fontFamily: 'Space Grotesk, sans-serif',
@@ -40,7 +42,9 @@ export default function About() {
         >
           About Me
         </h1>
+        </FadeIn>
 
+        <FadeIn delay={0.1}>
         <div
           style={{
             display: 'grid',
@@ -79,6 +83,7 @@ export default function About() {
             👨‍💻
           </div>
         </div>
+        </FadeIn>
       </section>
 
       {/* Skills */}

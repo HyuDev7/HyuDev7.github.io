@@ -19,6 +19,10 @@
 }
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -27,6 +31,8 @@
     background-color: var(--color-background);
     color: var(--color-text);
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -35,6 +41,18 @@
 
   code, pre {
     font-family: var(--font-mono);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Mobile: TOC を非表示 */
+  @media (max-width: 768px) {
+    aside[style*="sticky"] {
+      display: none;
+    }
   }
 }
 

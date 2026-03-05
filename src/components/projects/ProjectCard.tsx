@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Tag from '@/components/ui/Tag'
 import type { Project } from '@/lib/projects'
@@ -8,7 +9,9 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -6, boxShadow: '0 0 32px rgba(108, 99, 255, 0.28)' }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
       style={{
         backgroundColor: '#1A1A2E',
         border: '1px solid rgba(232, 232, 240, 0.08)',
@@ -17,17 +20,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         display: 'flex',
         flexDirection: 'column',
         gap: '0.75rem',
-        transition: 'box-shadow 0.3s ease, transform 0.3s ease',
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget
-        el.style.boxShadow = '0 0 30px rgba(108, 99, 255, 0.25)'
-        el.style.transform = 'translateY(-4px)'
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget
-        el.style.boxShadow = 'none'
-        el.style.transform = 'translateY(0)'
       }}
     >
       {project.featured && (
@@ -121,6 +113,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           Details →
         </Link>
       </div>
-    </div>
+    </motion.div>
   )
 }
