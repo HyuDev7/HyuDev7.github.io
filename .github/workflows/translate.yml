@@ -6,6 +6,8 @@ on:
     paths:
       - 'content/blog/*.md'
 
+  workflow_dispatch:
+
 jobs:
   translate:
     runs-on: ubuntu-latest
@@ -13,16 +15,9 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 2
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Anthropic SDK
-        run: npm install @anthropic-ai/sdk
 
       - name: Detect changed Japanese posts
         id: changed
@@ -34,66 +29,19 @@ jobs:
 
       - name: Translate changed posts
         if: steps.changed.outputs.files != ''
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          node << 'EOF'
-          const fs = require('fs')
-          const path = require('path')
-          const Anthropic = require('@anthropic-ai/sdk')
-
-          const client = new Anthropic.default()
-          const changedFiles = process.env.CHANGED_FILES.split('\n').filter(Boolean)
-
-          async function translatePost(filePath) {
-            const content = fs.readFileSync(filePath, 'utf-8')
-            console.log(`Translating: ${filePath}`)
-
-            const response = await client.messages.create({
-              model: 'claude-opus-4-6',
-              max_tokens: 8192,
-              messages: [
-                {
-                  role: 'user',
-                  content: `You are a technical blog translator. Translate the following Japanese Markdown blog post to natural English.
-
-Rules:
-- Translate the frontmatter fields: title, summary (keep other fields as-is)
-- Translate all body text naturally
-- Keep all code blocks, file names, URLs, and technical terms unchanged
-- Keep the exact same Markdown structure and formatting
-- Output only the translated Markdown, no explanation
-
-${content}`,
-                },
-              ],
-            })
-
-            const translated = response.content[0].text
-            const slug = path.basename(filePath)
-            const outPath = path.join('content/blog/en', slug)
-            fs.mkdirSync('content/blog/en', { recursive: true })
-            fs.writeFileSync(outPath, translated, 'utf-8')
-            console.log(`Written: ${outPath}`)
-          }
-
-          ;(async () => {
-            for (const file of changedFiles) {
-              await translatePost(file)
-            }
-          })()
-          EOF
+          echo "Translating changed files: $CHANGED_FILES"
         env:
           CHANGED_FILES: ${{ steps.changed.outputs.files }}
 
-      - name: Commit translated files
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add content/blog/en/
-          if git diff --staged --quiet; then
-            echo "No translation changes to commit"
-          else
-            git commit -m "chore: auto-translate blog posts to English [skip ci]"
-            git push
-          fi
+      # - name: Commit translated files
+      #   run: |
+      #     git config user.name 'github-actions[bot]'
+      #     git config user.email 'github-actions[bot]@users.noreply.github.com'
+      #     git add content/blog/en/
+      #     if git diff --staged --quiet; then
+      #       echo "No translation changes to commit"
+      #     else
+      #       git commit -m "chore: auto-translate blog posts to English [skip ci]"
+      #       git push
+      #     fi
