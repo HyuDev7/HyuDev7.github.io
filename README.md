@@ -93,6 +93,13 @@ thumbnail: "/images/blog/my-new-post.png"
 
 ---
 
+## 📚 Learning Ecosystem
+
+このリポジトリを基盤にした個人学習エコシステム(TILノート・学習ダッシュボード等)を構築中です。
+構想・ロードマップ・実装仕様は [docs/learning-ecosystem/](./docs/learning-ecosystem/README.md) を参照してください。
+
+---
+
 ## 📁 Directory Structure
 
 ```
