@@ -1,0 +1,47 @@
+name: Translate blog posts to English
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/blog/*.md'
+
+  workflow_dispatch:
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed Japanese posts
+        id: changed
+        run: |
+          # 前のコミットと比較して変更された content/blog/*.md を取得
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'content/blog/*.md' | grep -v '^content/blog/en/' || true)
+          echo "files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed files: $CHANGED"
+
+      - name: Translate changed posts
+        if: steps.changed.outputs.files != ''
+        run: |
+          echo "Translating changed files: $CHANGED_FILES"
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+
+      # - name: Commit translated files
+      #   run: |
+      #     git config user.name 'github-actions[bot]'
+      #     git config user.email 'github-actions[bot]@users.noreply.github.com'
+      #     git add content/blog/en/
+      #     if git diff --staged --quiet; then
+      #       echo "No translation changes to commit"
+      #     else
+      #       git commit -m "chore: auto-translate blog posts to English [skip ci]"
+      #       git push
+      #     fi

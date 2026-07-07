@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { useLang } from '@/lib/i18n'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -12,6 +13,7 @@ const navLinks = [
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const { lang, setLang } = useLang()
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 768px)')
@@ -61,9 +63,9 @@ export default function Header() {
           {'<Hugh />'}
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav + lang toggle */}
         {!isMobile && (
-          <nav style={{ display: 'flex', gap: '2rem' }}>
+          <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -81,6 +83,7 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <LangToggle lang={lang} setLang={setLang} />
           </nav>
         )}
 
@@ -128,8 +131,47 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <div style={{ padding: '0.75rem 0' }}>
+            <LangToggle lang={lang} setLang={setLang} />
+          </div>
         </div>
       )}
     </header>
+  )
+}
+
+function LangToggle({ lang, setLang }: { lang: 'ja' | 'en'; setLang: (l: 'ja' | 'en') => void }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        backgroundColor: 'rgba(232, 232, 240, 0.06)',
+        border: '1px solid rgba(232, 232, 240, 0.12)',
+        borderRadius: '6px',
+        overflow: 'hidden',
+        flexShrink: 0,
+      }}
+    >
+      {(['ja', 'en'] as const).map((l) => (
+        <button
+          key={l}
+          onClick={() => setLang(l)}
+          style={{
+            padding: '0.25rem 0.65rem',
+            fontSize: '0.75rem',
+            fontFamily: 'JetBrains Mono, monospace',
+            fontWeight: 600,
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+            backgroundColor: lang === l ? '#6C63FF' : 'transparent',
+            color: lang === l ? '#fff' : '#9999B3',
+            letterSpacing: '0.05em',
+          }}
+        >
+          {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
   )
 }
