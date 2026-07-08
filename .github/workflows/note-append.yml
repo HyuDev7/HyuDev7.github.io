@@ -1,0 +1,72 @@
+name: Append comment to note
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  append:
+    # セキュリティ要件: リポジトリオーナー以外のコメントは無視する。PRへのコメントも除外する
+    # (issue_comment は PR コメントでも発火するため)。note-capture.yml と同じ理由で必須。
+    if: >
+      github.event.issue.pull_request == null &&
+      contains(github.event.issue.labels.*.name, 'note') &&
+      github.event.comment.user.login == 'HyuDev7'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      actions: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find note slug
+        id: find
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(
+              (c) => c.user.login === 'github-actions[bot]' && /\/notes\/[a-z0-9-]+/i.test(c.body)
+            )
+            if (!botComment) {
+              core.setFailed('公開済みノートのURLコメントが見つかりませんでした')
+              return
+            }
+            const match = botComment.body.match(/\/notes\/([a-z0-9-]+)/i)
+            core.setOutput('slug', match[1])
+
+      - name: Append comment to note
+        env:
+          NOTE_SLUG: ${{ steps.find.outputs.slug }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: node scripts/append-note-comment.mjs
+
+      - name: Commit and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add "content/notes/${{ steps.find.outputs.slug }}.md"
+          git commit -m "note: 追記 (#${{ github.event.issue.number }})"
+          git push
+
+      - name: Trigger deploy
+        run: gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: React to comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: '+1',
+            })
