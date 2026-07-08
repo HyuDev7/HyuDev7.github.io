@@ -25,6 +25,9 @@
 | 6 | [06-phase3-spec.md](./06-phase3-spec.md) | Phase 3(資産化)の方向性メモ(仕様は未確定) | 全員 |
 | 7 | [07-operations.md](./07-operations.md) | 完成後の運用ガイド。日次・週次・月次で何をするか、AI利用の境界ルール | オーナー |
 
+> 学習エコシステムと無関係な既存機能のエンハンス案は
+> [../enhancements/](../enhancements/) に分けて管理する(例: 英訳パイプラインの完成)。
+
 ## 30秒サマリ
 
 - このサイトは Next.js Static Export + GitHub Pages 製。`content/blog/*.md` を push すると
