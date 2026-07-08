@@ -15,6 +15,7 @@ jobs:
     permissions:
       contents: write
       issues: write
+      actions: write
 
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +41,14 @@ jobs:
           git add "${{ steps.create.outputs.path }}"
           git commit -m "note: ${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
           git push
+
+      - name: Trigger deploy
+        # GITHUB_TOKEN での push は他 workflow の on:push を発火させない仕様のため、
+        # deploy.yml の workflow_dispatch を明示的に呼ぶ。
+        run: |
+          gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Comment and close issue
         uses: actions/github-script@v7

@@ -108,9 +108,20 @@ source: "書籍: Kotlin in Action 2nd"   # 任意。学びの出典(URL・書名
      `<YYYY-MM-DD>-note-<issue番号>` にフォールバック)。既存ファイルと衝突したら `-2` 等を付す
   3. frontmatter を組み立てて `content/notes/<slug>.md` を書き出し
   4. `github-actions[bot]` 名義で `main` へ commit & push
-  5. Issue に公開URLをコメントして close(`state_reason: completed`)
+  5. **`gh workflow run deploy.yml --ref main` で deploy を明示的に dispatch する**
+     (下記の落とし穴への対策。必須ステップ)
+  6. Issue に公開URLをコメントして close(`state_reason: completed`)
 - frontmatter への値の埋め込みは YAML エスケープに注意(タイトルに `"` や `:` が
   含まれるケース)。gray-matter で読めることが受け入れ条件。
+
+> **既知の落とし穴その2**: デフォルトの `GITHUB_TOKEN` で行った git push は、
+> 他の workflow の `on: push` トリガーを**発火させない**(無限ループ防止のための
+> GitHub Actions の仕様)。そのため `note-capture.yml` が `main` に push しても
+> `deploy.yml` は自動起動せず、ノートはリポジトリには入るがサイトには反映されない
+> (2026-07-08 に実際に発生)。対策として `deploy.yml` に `workflow_dispatch:` を
+> 追加し、`note-capture.yml` の commit 後に `gh workflow run deploy.yml --ref main`
+> で明示的に dispatch する(`actions: write` 権限が必要)。API 経由の明示的な
+> dispatch は無限ループ防止の対象外なので正常に動く。
 
 ### 設計上の割り切り(オーナー合意済み)
 
