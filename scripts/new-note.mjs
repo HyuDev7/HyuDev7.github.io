@@ -10,19 +10,21 @@ if (!title) {
 }
 
 const date = new Date().toISOString().slice(0, 10)
-const slugPart = title
+const rawSlugPart = title
   .toLowerCase()
   .trim()
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/^-+|-+$/g, '')
+// 日本語主体のタイトルはslugifyで断片しか残らないことがあるためフォールバック
+const slugPart = rawSlugPart.length >= 3 ? rawSlugPart : 'note'
 
 const notesDir = path.join(process.cwd(), 'content/notes')
 fs.mkdirSync(notesDir, { recursive: true })
 
-let slug = `${date}-${slugPart || 'note'}`
+let slug = `${date}-${slugPart}`
 let suffix = 2
 while (fs.existsSync(path.join(notesDir, `${slug}.md`))) {
-  slug = `${date}-${slugPart || 'note'}-${suffix}`
+  slug = `${date}-${slugPart}-${suffix}`
   suffix += 1
 }
 

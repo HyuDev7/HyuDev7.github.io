@@ -27,15 +27,25 @@ function slugify(text) {
 
 const title = issueTitle.replace(/^note:\s*/i, '').trim() || `Note #${issueNumber}`
 const body = extractSection(issueBody, '本文') || '(本文なし)'
-const tags = extractSection(issueBody, 'タグ')
-  .split(',')
-  .map((t) => t.trim())
-  .filter(Boolean)
+// 「タグ」= 既存タグのドロップダウン(カンマ区切りで届く)、「新規タグ」= 自由入力。
+// ドロップダウンの見出し「タグ」の正規表現が「新規タグ」に誤マッチしないのは、
+// パターンが「### 」直後からの一致を要求するため。
+const tags = [
+  ...new Set(
+    [extractSection(issueBody, 'タグ'), extractSection(issueBody, '新規タグ')]
+      .join(',')
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+  ),
+]
 const source = extractSection(issueBody, '出典')
 
 const date = new Date().toISOString().slice(0, 10)
+// 日本語主体のタイトルはslugifyでほぼ消えて「2」のような断片だけ残ることがある。
+// 3文字未満しか残らなければ意味のあるslugではないとみなし issue番号にフォールバック。
 const titleSlugPart = slugify(title)
-const baseSlug = `${date}-${titleSlugPart || `note-${issueNumber}`}`
+const baseSlug = `${date}-${titleSlugPart.length >= 3 ? titleSlugPart : `note-${issueNumber}`}`
 
 const notesDir = path.join(process.cwd(), 'content/notes')
 fs.mkdirSync(notesDir, { recursive: true })

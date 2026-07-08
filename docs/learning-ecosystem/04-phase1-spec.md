@@ -84,8 +84,11 @@ source: "書籍: Kotlin in Action 2nd"   # 任意。学びの出典(URL・書名
 `.github/ISSUE_TEMPLATE/note.yml` を新規作成(GitHub Issue Forms 形式):
 
 - `title`: ノートタイトル(Issueタイトルをそのまま使う)
-- 入力項目: `tags`(カンマ区切りテキスト)、`source`(任意)、`body`(textarea、本文)
+- 入力項目: `tags`(既存タグのドロップダウン)、`new_tags`(新規タグのみ自由入力)、
+  `source`(任意)、`body`(textarea、本文)
 - 自動でラベル `note` を付与(workflow のトリガー条件になる)
+- **このファイルは自動生成**(タグ選択肢の同期)。手で編集しないこと。
+  詳細は [10-tag-suggest-spec.md](./10-tag-suggest-spec.md)
 
 > **既知の落とし穴**: Issue Forms の `labels:` フィールドは、そのラベルが
 > **リポジトリに事前登録されていないと、エラーも出さず黙って付与されない**。

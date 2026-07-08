@@ -34,11 +34,16 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: node scripts/create-note-from-issue.mjs
 
+      # このworkflowのGITHUB_TOKEN pushではsync-note-template.ymlが発火しないため、
+      # 新規タグのドロップダウン同期はここでinlineに行う(deploy dispatchと同じ理由)。
+      - name: Sync note template tags
+        run: node scripts/update-note-template.mjs
+
       - name: Commit and push
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add "${{ steps.create.outputs.path }}"
+          git add "${{ steps.create.outputs.path }}" .github/ISSUE_TEMPLATE/note.yml
           git commit -m "note: ${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
           git push
 

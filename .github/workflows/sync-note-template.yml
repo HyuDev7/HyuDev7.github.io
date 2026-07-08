@@ -1,0 +1,39 @@
+name: Sync note template tags
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/blog/**'
+      - 'content/notes/**'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci
+
+      - name: Regenerate note template
+        run: node scripts/update-note-template.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .github/ISSUE_TEMPLATE/note.yml
+          if git diff --staged --quiet; then
+            echo "No template changes."
+          else
+            git commit -m "chore: Issueフォームのタグ選択肢を同期"
+            git push
+          fi

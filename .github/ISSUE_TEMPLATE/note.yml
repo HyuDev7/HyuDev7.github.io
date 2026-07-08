@@ -1,3 +1,5 @@
+# このファイルは scripts/update-note-template.mjs により自動生成される。
+# タグの選択肢を手で編集しないこと(次回の同期で上書きされる)。
 name: "📝 Note"
 description: "TILノートを投稿する(学習中の生メモ。整形不要)"
 title: "note: "
@@ -12,12 +14,28 @@ body:
         今日学んだこと...
     validations:
       required: true
-  - type: input
+  - type: dropdown
     id: tags
     attributes:
       label: タグ
-      description: "カンマ区切り。既存記事・ノートのタグ表記に合わせること(例: Kotlin, Docker)"
-      placeholder: "Kotlin, Coroutines"
+      description: "既存タグから選ぶ(表記ゆれ防止のため、ここにあるものは必ずここから選ぶ)"
+      multiple: true
+      options:
+        - "CI/CD"
+        - "Coroutines"
+        - "Docker"
+        - "Kotlin"
+        - "Meta"
+        - "monitoring"
+        - "非同期"
+    validations:
+      required: false
+  - type: input
+    id: new_tags
+    attributes:
+      label: 新規タグ
+      description: "上の選択肢に無いタグだけ、カンマ区切りで(例: GraphQL, gRPC)"
+      placeholder: "GraphQL, gRPC"
     validations:
       required: false
   - type: input

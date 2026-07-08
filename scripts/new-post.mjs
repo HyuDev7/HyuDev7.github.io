@@ -10,11 +10,13 @@ if (!title) {
 }
 
 const date = new Date().toISOString().slice(0, 10)
-const slug = title
+const rawSlug = title
   .toLowerCase()
   .trim()
   .replace(/[^a-z0-9]+/g, '-')
-  .replace(/^-+|-+$/g, '') || 'post'
+  .replace(/^-+|-+$/g, '')
+// 日本語主体のタイトルはslugifyで断片しか残らないことがあるためフォールバック
+const slug = rawSlug.length >= 3 ? rawSlug : `${date}-post`
 
 const blogDir = path.join(process.cwd(), 'content/blog')
 fs.mkdirSync(blogDir, { recursive: true })

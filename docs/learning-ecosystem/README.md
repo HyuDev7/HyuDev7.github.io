@@ -26,6 +26,7 @@
 | 7 | [07-operations.md](./07-operations.md) | 完成後の運用ガイド。日次・週次・月次で何をするか、AI利用の境界ルール | オーナー |
 | 8 | [08-review-reminder-spec.md](./08-review-reminder-spec.md) | Phase 3 候補C(復習リマインド)の実装仕様 | 実装者・エージェント |
 | 9 | [09-note-append-spec.md](./09-note-append-spec.md) | 公開済みノートへの追記手段(Phase 1 拡張)の実装仕様 | 実装者・エージェント |
+| 10 | [10-tag-suggest-spec.md](./10-tag-suggest-spec.md) | タグ表記ゆれ対策(ドロップダウン化・自動同期)の実装仕様 | 実装者・エージェント |
 
 > 学習エコシステムと無関係な既存機能のエンハンス案は
 > [../enhancements/](../enhancements/) に分けて管理する(例: 英訳パイプラインの完成)。
