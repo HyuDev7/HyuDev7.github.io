@@ -1,0 +1,57 @@
+name: Weekly Learning Summary
+
+on:
+  schedule:
+    - cron: '0 12 * * 0' # 日曜 21:00 JST
+  workflow_dispatch:
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci
+
+      - name: Weekly stats
+        id: stats
+        run: node scripts/weekly-stats.mjs
+
+      - name: AI trend comment
+        id: trend
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTES_JSON: ${{ steps.stats.outputs.notes_json }}
+        run: node scripts/weekly-trend.mjs
+
+      - name: Create summary issue
+        uses: actions/github-script@v7
+        env:
+          STATS: ${{ steps.stats.outputs.stats }}
+          TREND: ${{ steps.trend.outputs.trend }}
+        with:
+          script: |
+            const date = new Date().toISOString().slice(0, 10)
+            const stats = process.env.STATS ?? ''
+            const trend = process.env.TREND ?? ''
+
+            const sections = [stats]
+            if (trend && trend.trim()) {
+              sections.push('## 今週の傾向 (AI)', trend)
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📊 Weekly Learning Summary (${date})`,
+              body: sections.join('\n\n'),
+              labels: ['weekly-summary'],
+            })
