@@ -1,0 +1,61 @@
+name: Capture note from Issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  capture:
+    # セキュリティ要件: リポジトリオーナー以外の Issue は無視する。
+    # このガードを外すと、第三者が Issue を立てるだけで本番サイトにコンテンツを注入できてしまう。
+    if: >
+      github.event.issue.user.login == 'HyuDev7' &&
+      contains(github.event.issue.labels.*.name, 'note')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci
+
+      - name: Create note from issue
+        id: create
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node scripts/create-note-from-issue.mjs
+
+      - name: Commit and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add "${{ steps.create.outputs.path }}"
+          git commit -m "note: ${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
+          git push
+
+      - name: Comment and close issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const slug = '${{ steps.create.outputs.slug }}'
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `公開しました: https://${context.repo.owner}.github.io/notes/${slug}`,
+            })
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed',
+              state_reason: 'completed',
+            })

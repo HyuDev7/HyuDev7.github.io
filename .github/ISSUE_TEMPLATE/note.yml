@@ -1,0 +1,30 @@
+name: "📝 Note"
+description: "TILノートを投稿する(学習中の生メモ。整形不要)"
+title: "note: "
+labels: ["note"]
+body:
+  - type: textarea
+    id: body
+    attributes:
+      label: 本文
+      description: "学んだことを書く。整形不要。箇条書き1行でもよい"
+      placeholder: |
+        今日学んだこと...
+    validations:
+      required: true
+  - type: input
+    id: tags
+    attributes:
+      label: タグ
+      description: "カンマ区切り。既存記事・ノートのタグ表記に合わせること(例: Kotlin, Docker)"
+      placeholder: "Kotlin, Coroutines"
+    validations:
+      required: false
+  - type: input
+    id: source
+    attributes:
+      label: 出典
+      description: "書籍名・URL・動画名など(任意)"
+      placeholder: "書籍: Kotlin in Action 2nd"
+    validations:
+      required: false

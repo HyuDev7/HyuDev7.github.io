@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "new:note": "node scripts/new-note.mjs",
+    "new:post": "node scripts/new-post.mjs"
   },
   "keywords": [],
   "author": "",
