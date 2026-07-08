@@ -2,7 +2,7 @@ name: Capture note from Issue
 
 on:
   issues:
-    types: [opened]
+    types: [opened, labeled]
 
 jobs:
   capture:

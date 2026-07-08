@@ -84,11 +84,20 @@ source: "書籍: Kotlin in Action 2nd"   # 任意。学びの出典(URL・書名
 - 入力項目: `tags`(カンマ区切りテキスト)、`source`(任意)、`body`(textarea、本文)
 - 自動でラベル `note` を付与(workflow のトリガー条件になる)
 
+> **既知の落とし穴**: Issue Forms の `labels:` フィールドは、そのラベルが
+> **リポジトリに事前登録されていないと、エラーも出さず黙って付与されない**。
+> 初回導入時は `note` ラベルを手動(またはAPI経由)で作成しておくこと。
+> ラベルが存在しないまま Issue が作成されると、下記トリガー条件が false になり
+> job が `skipped` になる(2026-07-08 に実際に発生。原因はモバイル起因ではなかった)。
+
 ### 変換 workflow
 
 `.github/workflows/note-capture.yml` を新規作成:
 
-- トリガー: `issues: [opened]` かつラベル `note`
+- トリガー: `issues: [opened, labeled]` かつラベル `note`。
+  `labeled` も含めるのは、上記の落とし穴でラベルが付かなかった Issue に対して
+  手動でラベルを付け直すだけで再処理できるようにするため(`opened` のみだと
+  `rerun` してもイベント発生時点のペイロードが再利用されるだけでラベル無しのまま失敗する)。
 - **セキュリティ要件(必須)**: `github.event.issue.user.login == 'HyuDev7'`
   (= リポジトリオーナー)の場合のみ実行する。
   この条件が無いと、**第三者が Issue を立てるだけで本番サイトにコンテンツを注入できてしまう**。

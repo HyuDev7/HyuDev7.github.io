@@ -53,7 +53,8 @@
 
 | 症状 | 見るところ |
 |------|-----------|
-| Issue を立てたのにノートが公開されない | Actions タブの note-capture workflow のログ。ラベル `note` が付いているか。自分のアカウントで立てたか(他者の Issue は仕様として無視される) |
+| Issue を立てたのにノートが公開されない(job が `skipped`) | ほぼ確実に `note` ラベルが付いていない。GitHub の Issue Forms はラベルがリポジトリに未登録だと黙って付与しない仕様がある(初回のみ起きる問題。一度 `note` ラベルが作成されれば以降は自動で付く)。Issue に手動で `note` ラベルを付けると `labeled` イベントで再処理される |
+| Issue を立てたのにノートが公開されない(その他) | Actions タブの note-capture workflow のログ。自分のアカウントで立てたか(他者の Issue は仕様として無視される) |
 | サイト全体が更新されない | Actions タブの deploy workflow。`npm run build` がローカルで通るか |
 | /learning の集計がおかしい | タグの表記ゆれを疑う(`kotlin` vs `Kotlin` など)。ノートと記事の frontmatter を確認 |
 | 週次サマリが来ない | Actions タブの weekly-summary。cron は UTC 表記である点に注意 |
