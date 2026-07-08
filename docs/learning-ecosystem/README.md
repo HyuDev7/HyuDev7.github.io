@@ -22,8 +22,9 @@
 | 3 | [03-roadmap.md](./03-roadmap.md) | Phase 1〜3 の全体展望。各Phaseの目的・成果物・完了条件 | 全員 |
 | 4 | [04-phase1-spec.md](./04-phase1-spec.md) | Phase 1(日次ループ)の実装仕様 | 実装者・エージェント |
 | 5 | [05-phase2-spec.md](./05-phase2-spec.md) | Phase 2(週次ループ)の実装仕様 | 実装者・エージェント |
-| 6 | [06-phase3-spec.md](./06-phase3-spec.md) | Phase 3(資産化)の方向性メモ(仕様は未確定) | 全員 |
+| 6 | [06-phase3-spec.md](./06-phase3-spec.md) | Phase 3(資産化)の方向性メモ(候補A・Bは仕様未確定) | 全員 |
 | 7 | [07-operations.md](./07-operations.md) | 完成後の運用ガイド。日次・週次・月次で何をするか、AI利用の境界ルール | オーナー |
+| 8 | [08-review-reminder-spec.md](./08-review-reminder-spec.md) | Phase 3 候補C(復習リマインド)の実装仕様 | 実装者・エージェント |
 
 > 学習エコシステムと無関係な既存機能のエンハンス案は
 > [../enhancements/](../enhancements/) に分けて管理する(例: 英訳パイプラインの完成)。

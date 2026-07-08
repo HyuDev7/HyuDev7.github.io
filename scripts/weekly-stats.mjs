@@ -65,6 +65,26 @@ function computePromotableTags(posts, notes) {
 
 const promotableTags = computePromotableTags(posts, notes)
 
+const REVIEW_INTERVALS = [
+  { days: 7, label: '1週間' },
+  { days: 28, label: '4週間' },
+  { days: 84, label: '12週間' },
+]
+
+function getReviewCandidates(posts, now) {
+  return REVIEW_INTERVALS.flatMap(({ days, label }) => {
+    return posts
+      .filter((p) => {
+        if (!p.date) return false
+        const ageDays = Math.floor((now - new Date(p.date)) / (1000 * 60 * 60 * 24))
+        return ageDays >= days && ageDays < days + 7
+      })
+      .map((p) => ({ ...p, intervalLabel: label }))
+  })
+}
+
+const reviewCandidates = getReviewCandidates(posts, now)
+
 const tagCounts = {}
 for (const n of notesThisWeek) {
   for (const t of n.tags) {
@@ -103,6 +123,18 @@ if (promotableTags.length > 0) {
   }
 } else {
   lines.push('- 今週はまだありません。')
+}
+lines.push('')
+lines.push(`## 復習リマインド`)
+lines.push('')
+if (reviewCandidates.length > 0) {
+  for (const p of reviewCandidates) {
+    lines.push(
+      `- 📄 **${p.title}**(公開から${p.intervalLabel}) — 再読して1行追記しよう: https://HyuDev7.github.io/blog/${p.slug}`
+    )
+  }
+} else {
+  lines.push('- 今週はありません。')
 }
 
 const statsMarkdown = lines.join('\n')
