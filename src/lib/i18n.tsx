@@ -17,6 +17,9 @@ export function LangProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem('lang') as Lang | null
+    // SSGでは初回レンダリングを'ja'固定にし、ハイドレーション後に保存値へ切り替える
+    // 意図的なパターン(サーバー出力とのミスマッチ回避のため effect 内で行う必要がある)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (saved === 'en' || saved === 'ja') setLangState(saved)
   }, [])
 

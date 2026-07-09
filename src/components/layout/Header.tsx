@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { useLang } from '@/lib/i18n'
 
 const navLinks = [
@@ -12,18 +12,22 @@ const navLinks = [
   { href: '/contact', label: 'Contact' },
 ]
 
+const MOBILE_QUERY = '(max-width: 768px)'
+
+function subscribeMobile(callback: () => void) {
+  const mq = window.matchMedia(MOBILE_QUERY)
+  mq.addEventListener('change', callback)
+  return () => mq.removeEventListener('change', callback)
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  const isMobile = useSyncExternalStore(
+    subscribeMobile,
+    () => window.matchMedia(MOBILE_QUERY).matches,
+    () => false // SSR時はデスクトップ表示で描画し、ハイドレーション後に実測値へ
+  )
   const { lang, setLang } = useLang()
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)')
-    setIsMobile(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
 
   return (
     <header
