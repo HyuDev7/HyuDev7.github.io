@@ -27,6 +27,7 @@
 | 8 | [08-review-reminder-spec.md](./08-review-reminder-spec.md) | Phase 3 候補C(復習リマインド)の実装仕様 | 実装者・エージェント |
 | 9 | [09-note-append-spec.md](./09-note-append-spec.md) | 公開済みノートへの追記手段(Phase 1 拡張)の実装仕様 | 実装者・エージェント |
 | 10 | [10-tag-suggest-spec.md](./10-tag-suggest-spec.md) | タグ表記ゆれ対策(ドロップダウン化・自動同期)の実装仕様 | 実装者・エージェント |
+| 11 | [11-article-publish-spec.md](./11-article-publish-spec.md) | スマホ記事執筆(Issue下書き → /publish)の実装仕様 | 実装者・エージェント |
 
 > 学習エコシステムと無関係な既存機能のエンハンス案は
 > [../enhancements/](../enhancements/) に分けて管理する(例: 英訳パイプラインの完成)。

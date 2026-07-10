@@ -1,0 +1,51 @@
+# このファイルは scripts/update-note-template.mjs により自動生成される。
+# タグの選択肢を手で編集しないこと(次回の同期で上書きされる)。
+name: "✍️ Article"
+description: "記事の下書きを始める(Issueが下書き帳になる。書き上がったら /publish コメントで公開)"
+title: "article: "
+labels: ["article"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        この Issue は**下書き帳**です。投稿後も本文を何度でも編集できます。
+        書き上がったら `/publish` とコメントすると記事として公開されます。
+        本文は自分で書くこと(AIに書かせない — 執筆が定着プロセスそのもの)。
+  - type: textarea
+    id: body
+    attributes:
+      label: 本文
+      description: "記事本文(Markdown)。あとから何度でも編集できるので途中まででもよい"
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: 要約
+      description: "記事一覧に表示される一行要約(公開までに書けばよい)"
+    validations:
+      required: false
+  - type: dropdown
+    id: tags
+    attributes:
+      label: タグ
+      description: "既存タグから選ぶ(表記ゆれ防止のため、ここにあるものは必ずここから選ぶ)"
+      multiple: true
+      options:
+        - "CI/CD"
+        - "Coroutines"
+        - "Docker"
+        - "Kotlin"
+        - "Meta"
+        - "monitoring"
+        - "非同期"
+    validations:
+      required: false
+  - type: input
+    id: new_tags
+    attributes:
+      label: 新規タグ
+      description: "上の選択肢に無いタグだけ、カンマ区切りで(例: GraphQL, gRPC)"
+      placeholder: "GraphQL, gRPC"
+    validations:
+      required: false

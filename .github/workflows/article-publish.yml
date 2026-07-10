@@ -1,16 +1,18 @@
-name: Capture note from Issue
+name: Publish article from Issue
 
 on:
-  issues:
-    types: [opened, labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
-  capture:
-    # セキュリティ要件: リポジトリオーナー以外の Issue は無視する。
-    # このガードを外すと、第三者が Issue を立てるだけで本番サイトにコンテンツを注入できてしまう。
+  publish:
+    # セキュリティ要件: リポジトリオーナーの /publish コメントのみ。PRコメントは除外。
+    # note-capture.yml / note-append.yml と同じ理由で必須。
     if: >
-      github.event.issue.user.login == 'HyuDev7' &&
-      contains(github.event.issue.labels.*.name, 'note')
+      github.event.issue.pull_request == null &&
+      contains(github.event.issue.labels.*.name, 'article') &&
+      github.event.comment.user.login == 'HyuDev7' &&
+      startsWith(github.event.comment.body, '/publish')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -26,32 +28,29 @@ jobs:
 
       - run: npm ci
 
-      - name: Create note from issue
-        id: create
+      - name: Publish article from issue
+        id: publish
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: node scripts/create-note-from-issue.mjs
+        run: node scripts/publish-article-from-issue.mjs
 
-      # このworkflowのGITHUB_TOKEN pushではsync-note-template.ymlが発火しないため、
-      # 新規タグのドロップダウン同期はここでinlineに行う(deploy dispatchと同じ理由)。
-      - name: Sync note template tags
+      # 新規タグが増えた可能性があるため、Issueフォームのタグ選択肢を同期
+      # (GITHUB_TOKEN push では sync-note-template.yml が発火しないため inline で行う)
+      - name: Sync issue template tags
         run: node scripts/update-note-template.mjs
 
       - name: Commit and push
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add "${{ steps.create.outputs.path }}" .github/ISSUE_TEMPLATE/
-          git commit -m "note: ${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
+          git add "${{ steps.publish.outputs.path }}" .github/ISSUE_TEMPLATE/
+          git commit -m "post: ${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
           git push
 
       - name: Trigger deploy
-        # GITHUB_TOKEN での push は他 workflow の on:push を発火させない仕様のため、
-        # deploy.yml の workflow_dispatch を明示的に呼ぶ。
-        run: |
-          gh workflow run deploy.yml --ref main
+        run: gh workflow run deploy.yml --ref main
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -59,12 +58,12 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const slug = '${{ steps.create.outputs.slug }}'
+            const slug = '${{ steps.publish.outputs.slug }}'
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `公開しました: https://${context.repo.owner}.github.io/notes/${slug}`,
+              body: `公開しました: https://${context.repo.owner}.github.io/blog/${slug}`,
             })
             await github.rest.issues.update({
               owner: context.repo.owner,

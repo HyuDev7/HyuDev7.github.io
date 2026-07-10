@@ -8,10 +8,12 @@ jobs:
   append:
     # セキュリティ要件: リポジトリオーナー以外のコメントは無視する。PRへのコメントも除外する
     # (issue_comment は PR コメントでも発火するため)。note-capture.yml と同じ理由で必須。
+    # '/'始まりはコマンドコメント(/publish等)とみなし追記対象にしない。
     if: >
       github.event.issue.pull_request == null &&
       contains(github.event.issue.labels.*.name, 'note') &&
-      github.event.comment.user.login == 'HyuDev7'
+      github.event.comment.user.login == 'HyuDev7' &&
+      !startsWith(github.event.comment.body, '/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
